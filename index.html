@@ -1,34 +1,131 @@
-<html>
+<!DOCTYPE html>
+<html lang="th">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เกมกระโดด</title>
+
 <style>
 body {
-    text-align: center;
-    font-family: Arial;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f0f0f0;
+    margin: 0;
 }
 
-button {
-    padding: 67px 67px 67px 67px;
-    front-size: 60px;
-    color: red;
-    background: #000111;
-    border-radius: 50px;
+#game {
+    width: 800px;
+    height: 250px;
+    border: 3px solid #333;
+    position: relative;
+    overflow: hidden;
+    background: white;
+}
+
+#player {
+    width: 40px;
+    height: 40px;
+    background: #2196f3;
+    position: absolute;
+    bottom: 0;
+    left: 50px;
+}
+
+#obstacle {
+    width: 30px;
+    height: 60px;
+    background: #f44336;
+    position: absolute;
+    bottom: 0;
+    right: -30px;
+}
+
+.jump {
+    animation: jump 0.6s ease;
+}
+
+@keyframes jump {
+    0%   { bottom: 0; }
+    50%  { bottom: 120px; }
+    100% { bottom: 0; }
+}
+
+#score {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    font-weight: bold;
 }
 </style>
 </head>
-</html>
+<body>
 
-<h1>เว็บตัวอย่าง</h1>
-
-<button onclick="sayHello()">
-กดที่นี่
-</button>
+<div id="game">
+    <div id="score">0</div>
+    <div id="player"></div>
+    <div id="obstacle"></div>
+</div>
 
 <script>
-    function sayHello() {
-alert("สวัสดีปกรสุดหล่อ56!");
+const player = document.getElementById("player");
+const obstacle = document.getElementById("obstacle");
+const scoreDisplay = document.getElementById("score");
+
+let score = 0;
+let obstacleX = 800;
+let gameOver = false;
+
+function jump() {
+    if (!player.classList.contains("jump")) {
+        player.classList.add("jump");
+        setTimeout(() => {
+            player.classList.remove("jump");
+        }, 600);
     }
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.code === "Space" || e.code === "ArrowUp") {
+        jump();
+    }
+});
+
+document.addEventListener("click", jump);
+
+function gameLoop() {
+    if (gameOver) return;
+
+    obstacleX -= 6;
+
+    if (obstacleX < -30) {
+        obstacleX = 800;
+        score++;
+        scoreDisplay.textContent = score;
+    }
+
+    obstacle.style.right = (800 - obstacleX) + "px";
+
+    const playerBottom =
+        player.classList.contains("jump") ? 120 : 0;
+
+    if (
+        obstacleX > 40 &&
+        obstacleX < 90 &&
+        playerBottom < 50
+    ) {
+        gameOver = true;
+        alert("Game Over!\nคะแนน: " + score);
+        location.reload();
+    }
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
 </script>
 
 </body>
 </html>
-
